@@ -2,7 +2,7 @@ const canvas = document.querySelector("canvas");
 const ctx = canvas.getContext("2d");
 let gameOver = false;
 let pauseGame = false;
-const SKELETON_WIDTH = 70;
+const SKELETON_WIDTH = 50;
 const SKELETON_HEIGHT = 70;
 let skeletonDamage = 1;
 const START_MAX_SPEED = 3;
@@ -63,7 +63,7 @@ let player = new Player(
 
 //SOURCE: http://keywordsuggest.org/gallery/748456.html
 var skeletonImage = new Image();
-skeletonImage.src = "https://image.ibb.co/evLP06/game_skeleton.png";
+skeletonImage.src = "https://image.ibb.co/chMfaG/trimmedskeleton.png";
 
 class Enemy extends Sprite {
   constructor(x, y, width, height, speed) {
@@ -259,7 +259,7 @@ function moveToward(leader, follower, speed) {
 }
 
 function jumpBack(spriteJumping, sprite2, amount) {
-  if (spriteJumping.x > sprite2.y) {
+  if (spriteJumping.x > sprite2.x) {
     spriteJumping.x = spriteJumping.x + amount;
   } else {
     spriteJumping.x = spriteJumping.x - amount;
@@ -284,7 +284,7 @@ function updateScene() {
   skeletonCollision();
   checkHit();
   updateScore();
-  if (pauseGame) {
+  if (pauseGame === true) {
     loadPauseScreen();
   } else if (healthBar.value > 0) {
     requestAnimationFrame(drawScene);
@@ -296,7 +296,7 @@ function updateScene() {
 function checkHit() {
   enemies.forEach(enemy => {
     if (haveCollided(enemy, player)) {
-      jumpBack(enemy, player, 4);
+      jumpBack(enemy, player, 10);
       healthBar.value -= skeletonDamage;
     }
   });
@@ -374,10 +374,10 @@ function endGame() {
 }
 
 function mouseClick(event) {
-  if (gameOver) {
+  if (gameOver === true) {
     resetGame();
   } else {
-    if (pauseGame) {
+    if (pauseGame === true) {
       requestAnimationFrame(drawScene);
     }
     pauseGame = !pauseGame;
