@@ -1,0 +1,34 @@
+canvas {
+  border: 1px solid black;
+  margin-top: 10px;
+}
+
+h1 {
+  margin: 0;
+  font: 50px "VT323", monospace;
+}
+
+p {
+  margin: 0;
+  font: 25px "VT323", monospace;
+}
+
+progress {
+  padding-top: 0;
+  border: 1px solid black;
+  background-color: red;
+  width: 300px;
+}
+
+progress::-webkit-progress-value {
+  background: red;
+}
+
+progress::-webkit-progress-bar {
+  background: black;
+}
+
+body {
+  margin-top: 0px;
+  padding-left: 20px;
+}
