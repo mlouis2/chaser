@@ -75,22 +75,22 @@ class Enemy extends Sprite {
 
 let enemies = [
   new Enemy(
-    canvas.width + 50,
-    canvas.height / 2,
+    -100,
+    -100,
     SKELETON_WIDTH,
     SKELETON_HEIGHT,
     randomSpeed()
   ),
   new Enemy(
-    0,
-    canvas.width + 50,
+    canvas.width + 100,
+    -100,
     SKELETON_WIDTH,
     SKELETON_HEIGHT,
     randomSpeed()
   ),
-  new Enemy(600, -50, SKELETON_WIDTH, SKELETON_HEIGHT, randomSpeed()),
+  new Enemy(-100, canvas.height + 100, SKELETON_WIDTH, SKELETON_HEIGHT, randomSpeed()),
   new Enemy(
-    600,
+    canvas.width + 100,
     canvas.width + 50,
     SKELETON_WIDTH,
     SKELETON_HEIGHT,
@@ -108,11 +108,11 @@ function skeletonCollision() {
   }
 }
 
-function newEnemy() {
+function spawnEnemy(x, y) {
   enemies.push(
     new Enemy(
-      0,
-      canvas.width + 50,
+      x,
+      y,
       SKELETON_WIDTH,
       SKELETON_HEIGHT,
       randomSpeed()
@@ -315,7 +315,7 @@ function updateScore() {
         minSpeed += speedIncrement;
         maxSpeed += speedIncrement;
       }
-      newEnemy();
+      spawnEnemy(canvas.width / 2, canvas.height + 50);
     }
     checkPowerups();
     scoreText.innerHTML = score;
@@ -402,13 +402,11 @@ function resetEnemies() {
   maxSpeed = START_MAX_SPEED;
   minSpeed = START_MIN_SPEED;
   skeletonDamage = 1;
-  enemies.forEach(enemy => {
-    enemy.speed = randomSpeed();
-    jumpBack(enemy, player, 300);
-  });
-  while (enemies.length > 4) {
-    enemies.pop();
-  }
+  enemies = [];
+  spawnEnemy(-100, -100);
+  spawnEnemy(canvas.width + 100, -100);
+  spawnEnemy(-100, canvas.height + 100);
+  spawnEnemy(canvas.width + 100, canvas.width + 50);
 }
 
 function resetScore() {
