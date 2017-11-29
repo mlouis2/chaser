@@ -259,12 +259,16 @@ function moveToward(leader, follower, speed) {
 }
 
 function jumpBack(spriteJumping, sprite2, amount) {
-  if (spriteJumping.x > sprite2.x) {
+  let spriteJumpingMidX = spriteJumping.x + (spriteJumping.width / 2);
+  let spriteJumpingMidY = spriteJumping.y + (spriteJumping.height / 2);
+  let sprite2MidX = sprite2.x + (sprite2.width / 2);
+  let sprite2MidY = sprite2.y + (sprite2.height / 2);
+  if (spriteJumpingMidX > sprite2MidX) {
     spriteJumping.x = spriteJumping.x + amount;
   } else {
     spriteJumping.x = spriteJumping.x - amount;
   }
-  if (spriteJumping.y > sprite2.y) {
+  if (spriteJumpingMidY > sprite2MidY) {
     spriteJumping.y = spriteJumping.y + amount;
   } else {
     spriteJumping.y = spriteJumping.y - amount;
