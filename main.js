@@ -401,6 +401,7 @@ function resetGame() {
 function resetEnemies() {
   maxSpeed = START_MAX_SPEED;
   minSpeed = START_MIN_SPEED;
+  skeletonDamage = 1;
   enemies.forEach(enemy => {
     enemy.speed = randomSpeed();
     jumpBack(enemy, player, 300);
