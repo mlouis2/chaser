@@ -408,6 +408,7 @@ function resetEnemies() {
   maxSpeed = START_MAX_SPEED;
   minSpeed = START_MIN_SPEED;
   skeletonDamage = 1;
+  numSpawn = 1;
   enemies = [];
   spawnEnemy(-100, -100);
   spawnEnemy(canvas.width + 100, -100);
