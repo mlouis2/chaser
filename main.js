@@ -10,6 +10,7 @@ const START_MIN_SPEED = 1.5;
 let maxSpeed = START_MAX_SPEED;
 let minSpeed = START_MIN_SPEED;
 let speedIncrement = 0.5;
+let numSpawn = 1;
 const PLAYER_WIDTH = 50;
 const PLAYER_HEIGHT = 70;
 const PLAYER_SPEED = 5;
@@ -311,11 +312,13 @@ function updateScore() {
   if (scoreMiliseconds % 100 === 0) {
     score++;
     if (score % 5 === 0) {
-      if (maxSpeed < player.speed) {
+      if (maxSpeed < (player.speed - speedIncrement)) {
         minSpeed += speedIncrement;
         maxSpeed += speedIncrement;
       }
-      spawnEnemy(canvas.width / 2, canvas.height + 50);
+      for (let x = 0; x < numSpawn; x++) {
+        spawnEnemy(canvas.width / 2, canvas.height + 50);
+      }
     }
     checkPowerups();
     scoreText.innerHTML = score;
@@ -330,7 +333,10 @@ function checkPowerups() {
   if (score % 10 === 0) {
     newStar();
     starOnGround = true;
-    skeletonDamage += skeletonDamage * 0.5;
+    skeletonDamage += 1;
+  }
+  if (score % 25 === 0) {
+    numSpawn++;
   }
 }
 
