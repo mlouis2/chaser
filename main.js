@@ -39,7 +39,10 @@ class Sprite {
 		ctx.drawImage(this.image, this.x, this.y, this.width, this.height);
 	}
 }
+
+retrieveScore();
 requestAnimationFrame(drawScene);
+
 //SOURCE: https://openclipart.org/detail/227980/pixel-character
 var playerImage = new Image();
 playerImage.src = "https://image.ibb.co/fPcP2w/8_Bit_Character_1_copy.png";
@@ -368,7 +371,23 @@ function resetScore() {
 	if (score > highScore) {
 		highScore = score;
 		highScoreText.innerHTML = highScore;
+    storeScore();
 	}
 	score = 0;
 	scoreText.innerHTML = 0;
+}
+
+function storeScore() {
+  if (typeof(Storage) !== "undefined") {
+    localStorage.setItem("highScore", highScore);
+  }
+}
+
+function retrieveScore() {
+  if (typeof(Storage) !== "undefined") {
+    if (localStorage.getItem("highScore") === undefined || localStorage.getItem("highScore") === null) {
+      highScoreText.innerHTML = 0;
+    }
+    highScoreText.innerHTML = localStorage.getItem("highScore");
+  }
 }
