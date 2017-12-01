@@ -320,6 +320,7 @@ function drawScene() {
 }
 
 function loadPauseScreen() {
+	skeletonSounds.pause();
 	backgroundSounds.pause();
 	ctx.font = "120px VT323";
 	ctx.fillStyle = "white";
@@ -356,6 +357,7 @@ function mouseClick(event) {
 }
 
 function resetGame() {
+	backgroundSounds.currentTime = 0;
 	backgroundSounds.play();
 	healthBar.value = 100;
 	healthOnGround = false;
