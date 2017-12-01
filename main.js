@@ -27,7 +27,7 @@ let scoreText = document.getElementById("score");
 let highScoreText = document.getElementById("highscore");
 let numSpawn = 1;
 
-let skeletonSounds = new Audio('https://github.com/mlouis2/chaser/blob/master/sounds/skeleton.mp3');
+let skeletonSounds = new Audio('https://raw.githubusercontent.com/mlouis2/chaser/master/sounds/skeleton.mp3');
 skeletonSounds.play();
 
 function randomLocation(max, size) {
