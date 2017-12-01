@@ -27,7 +27,7 @@ let scoreText = document.getElementById("score");
 let highScoreText = document.getElementById("highscore");
 let numSpawn = 1;
 
-let skeletonSounds = new Audio('../Sounds/skeletonSounds');
+let skeletonSounds = new Audio('/chaser/blob/master/Sounds/SkeletonSounds.wav');
 skeletonSounds.play();
 
 function randomLocation(max, size) {
