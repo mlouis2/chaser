@@ -320,6 +320,7 @@ function drawScene() {
 }
 
 function loadPauseScreen() {
+	backgroundSounds.pause();
 	ctx.font = "120px VT323";
 	ctx.fillStyle = "white";
 	ctx.textAlign = "center";
@@ -347,6 +348,7 @@ function mouseClick(event) {
 		resetGame();
 	} else {
 		if (pauseGame) {
+			backgroundSounds.play();
 			requestAnimationFrame(drawScene);
 		}
 		pauseGame = !pauseGame;
@@ -354,6 +356,7 @@ function mouseClick(event) {
 }
 
 function resetGame() {
+	backgroundSounds.play();
 	healthBar.value = 100;
 	healthOnGround = false;
 	starOnGround = false;
