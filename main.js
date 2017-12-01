@@ -27,8 +27,11 @@ let scoreText = document.getElementById("score");
 let highScoreText = document.getElementById("highscore");
 let numSpawn = 1;
 
+//SOURCE: https://freesound.org/people/timgormly/sounds/170155/
+let starSound = new Audio('https://raw.githubusercontent.com/mlouis2/chaser/master/sounds/Star.mp3');
+
 //SOURCE: https://www.youtube.com/watch?v=J-21BggTCbA
-let powerupSounds = new Audio('https://raw.githubusercontent.com/mlouis2/chaser/master/sounds/Powerup.mp3');
+let healthSound = new Audio('https://raw.githubusercontent.com/mlouis2/chaser/master/sounds/Powerup.mp3');
 
 //SOURCE: https://www.youtube.com/watch?v=MzZJQtUekwI
 let backgroundSounds = new Audio('https://raw.githubusercontent.com/mlouis2/chaser/master/sounds/Background.mp3');
@@ -132,7 +135,7 @@ function newHealth() {
 function checkHealth() {
 	health.draw();
 	if (haveCollided(player, health)) {
-		powerupSounds.play();
+		healthSound.play();
 		healthBar.value += healthValue;
 		healthOnGround = false;
 	}
@@ -163,10 +166,10 @@ function newStar() {
 function checkStar() {
 	star.draw();
 	if (haveCollided(player, star)) {
+		starSound.play();
 		for (let x = 0; x < starPower; x++) {
 			enemies.shift();
 		}
-		powerupSounds.play();
 		minSpeed = minSpeed - speedIncrement;
 		maxSpeed = maxSpeed - speedIncrement;
 		starOnGround = false;
