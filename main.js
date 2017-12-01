@@ -27,8 +27,12 @@ let scoreText = document.getElementById("score");
 let highScoreText = document.getElementById("highscore");
 let numSpawn = 1;
 
+
+//SOURCE: https://www.youtube.com/watch?v=MzZJQtUekwI
+let backgroundSounds = new Audio('https://raw.githubusercontent.com/mlouis2/chaser/master/sounds/Background.mp3');
+
+//SOURCE: https://www.youtube.com/watch?v=lpqDphtOskU
 let skeletonSounds = new Audio('https://raw.githubusercontent.com/mlouis2/chaser/master/sounds/skeleton.mp3');
-skeletonSounds.play();
 
 function randomLocation(max, size) {
 	return Math.random() * (max - size);
@@ -43,6 +47,7 @@ class Sprite {
 	}
 }
 
+backgroundSounds.play();
 retrieveScore();
 requestAnimationFrame(drawScene);
 
@@ -269,6 +274,7 @@ function checkHit() {
 		if (haveCollided(enemy, player)) {
 			jumpBack(enemy, player, 10);
 			healthBar.value -= skeletonDamage;
+			skeletonSounds.play();
 		}
 	});
 }
