@@ -334,6 +334,7 @@ function loadPauseScreen() {
 }
 
 function endGame() {
+	backgroundSounds.pause();
 	gameOver = true;
 	ctx.font = "120px VT323";
 	ctx.fillStyle = "white";
