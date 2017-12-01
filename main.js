@@ -406,3 +406,43 @@ function retrieveScore() {
     highScoreText.innerHTML = localStorage.getItem("highScore");
   }
 }
+
+//Help with Konami Code from https://stackoverflow.com/questions/31626852/how-to-add-konami-code-in-a-website-based-on-html
+var allowedKeys = {
+  37: 'left',
+  38: 'up',
+  39: 'right',
+  40: 'down',
+  65: 'a',
+  66: 'b'
+};
+
+var konamiCode = ['up', 'up', 'down', 'down', 'left', 'right', 'left', 'right', 'b', 'a'];
+
+var konamiCodePosition = 0;
+
+document.addEventListener('keydown', function(e) {
+  var key = allowedKeys[e.keyCode];
+  var requiredKey = konamiCode[konamiCodePosition];
+
+  if (key == requiredKey) {
+
+    	konamiCodePosition++;
+
+    	if (konamiCodePosition == konamiCode.length) {
+      	activateKonamiCode();
+      	konamiCodePosition = 0;
+    	}
+  } else {
+     konamiCodePosition = 0;
+  }
+});
+
+function activateKonamiCode() {
+  //SOURCE: https://www.shutterstock.com/image-vector/seamless-pixelated-snow-texture-mapping-background-602230688?src=ofh7TSdxP506-TB16-Rnag-1-14
+  backgroundImage.src = "https://image.ibb.co/bFDixw/grass_Konami.png";
+  //Santa Hat SOURCE: http://moziru.com/explore/Santa%20Hat%20clipart%208%20bit/
+  skeletonImage.src = "https://image.ibb.co/eznXqG/konami_Skeleton.png";
+  playerImage.src = "https://image.ibb.co/hGFkAG/konami_Character.png";
+}
+
