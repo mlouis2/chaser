@@ -326,9 +326,13 @@ function drawScene() {
 	updateScene();
 }
 
-function loadPauseScreen() {
+function pauseSounds() {
 	skeletonSounds.pause();
 	backgroundSounds.pause();
+}
+
+function loadPauseScreen() {
+	pauseSounds();
 	ctx.font = "120px VT323";
 	ctx.fillStyle = "white";
 	ctx.textAlign = "center";
@@ -341,7 +345,7 @@ function loadPauseScreen() {
 }
 
 function endGame() {
-	backgroundSounds.pause();
+	pauseSounds();
 	gameOver = true;
 	ctx.font = "120px VT323";
 	ctx.fillStyle = "white";
