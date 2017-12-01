@@ -27,6 +27,8 @@ let scoreText = document.getElementById("score");
 let highScoreText = document.getElementById("highscore");
 let numSpawn = 1;
 
+//SOURCE: https://www.youtube.com/watch?v=J-21BggTCbA
+let powerupSounds = new Audio('https://raw.githubusercontent.com/mlouis2/chaser/master/sounds/Powerup.mp3');
 
 //SOURCE: https://www.youtube.com/watch?v=MzZJQtUekwI
 let backgroundSounds = new Audio('https://raw.githubusercontent.com/mlouis2/chaser/master/sounds/Background.mp3');
@@ -130,6 +132,7 @@ function newHealth() {
 function checkHealth() {
 	health.draw();
 	if (haveCollided(player, health)) {
+		powerupSounds.play();
 		healthBar.value += healthValue;
 		healthOnGround = false;
 	}
@@ -163,6 +166,7 @@ function checkStar() {
 		for (let x = 0; x < starPower; x++) {
 			enemies.shift();
 		}
+		powerupSounds.play();
 		minSpeed = minSpeed - speedIncrement;
 		maxSpeed = maxSpeed - speedIncrement;
 		starOnGround = false;
@@ -418,17 +422,13 @@ var allowedKeys = {
 };
 
 var konamiCode = ['up', 'up', 'down', 'down', 'left', 'right', 'left', 'right', 'b', 'a'];
-
 var konamiCodePosition = 0;
 
 document.addEventListener('keydown', function(e) {
   var key = allowedKeys[e.keyCode];
   var requiredKey = konamiCode[konamiCodePosition];
-
   if (key == requiredKey) {
-
     	konamiCodePosition++;
-
     	if (konamiCodePosition == konamiCode.length) {
       	activateKonamiCode();
       	konamiCodePosition = 0;
@@ -444,5 +444,9 @@ function activateKonamiCode() {
   //Santa Hat SOURCE: http://moziru.com/explore/Santa%20Hat%20clipart%208%20bit/
   skeletonImage.src = "https://image.ibb.co/eznXqG/konami_Skeleton.png";
   playerImage.src = "https://image.ibb.co/hGFkAG/konami_Character.png";
-}
 
+  //SOURCE: https://www.youtube.com/watch?v=17731HiOiXg
+  backgroundSounds.src = "https://raw.githubusercontent.com/mlouis2/chaser/master/sounds/KonamiMusic.mp3";
+  backgroundSounds.currentTime = 0;
+  backgroundSounds.play();
+}
