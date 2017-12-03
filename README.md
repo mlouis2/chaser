@@ -1,6 +1,7 @@
 # "SKELETON ATTACK!" by Maddie Louis
 
 https://mlouis2.github.io/chaser/
+
 https://codepen.io/mlouis2/pen/yPRJRG
 
 The purpose of the game is to avoid skeleton enemies that chase you around the screen. They get faster and more powerful over time, and health and star power-ups will appear to assist you. The score is based off of time, so the mission is to stay alive as long as possible.
