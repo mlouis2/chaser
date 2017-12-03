@@ -92,7 +92,7 @@ class Scoreboard {
 					spawnEnemy(canvas.width / 2, canvas.height + 50);
 				}
 			}
-			checkPowerups();
+			health.checkPowerups();
 			scoreText.innerHTML = score;
 		}
 	}
@@ -151,6 +151,15 @@ class Enemy extends Sprite {
 			speed
 		});
 	}
+	checkEnemyCollision() {
+		for (let x = 0; x < enemies.length; x++) {
+			for (let y = enemies.length - 1; y > x; y--) {
+				if (haveCollided(enemies[x], enemies[y])) {
+					jumpBack(enemies[x], enemies[y], 1);
+				}
+			}
+		}
+	}
 }
 let enemies = [
 	new Enemy(-100, -100, SKELETON_WIDTH, SKELETON_HEIGHT, randomSpeed()),
@@ -159,23 +168,32 @@ let enemies = [
 	new Enemy(canvas.width + 100, canvas.width + 50, SKELETON_WIDTH, SKELETON_HEIGHT, randomSpeed())
 ];
 
-function skeletonCollision() {
-	for (let x = 0; x < enemies.length; x++) {
-		for (let y = enemies.length - 1; y > x; y--) {
-			if (haveCollided(enemies[x], enemies[y])) {
-				jumpBack(enemies[x], enemies[y], 1);
-			}
+function spawnEnemy(x, y) {
+	enemies.push(new Enemy(x, y, SKELETON_WIDTH, SKELETON_HEIGHT, randomSpeed()));
+}
+
+class Powerup extends Sprite {
+	checkPowerups() {
+		if (score % 5 === 0) {
+			newHealth();
+			healthOnGround = true;
+		}
+		if (score % 10 === 0) {
+			newStar();
+			starOnGround = true;
+			skeletonDamage += 1;
+		}
+		if (score % 25 === 0) {
+			numSpawn++;
 		}
 	}
 }
 
-function spawnEnemy(x, y) {
-	enemies.push(new Enemy(x, y, SKELETON_WIDTH, SKELETON_HEIGHT, randomSpeed()));
-}
+
 //SOURCE: https://pixabay.com/en/pixel-heart-heart-pixel-symbol-red-2779422/
 var healthImage = new Image();
 healthImage.src = "https://image.ibb.co/eO8KYR/pixel_heart_2779422_960_720.png";
-class Health extends Sprite {
+class Health extends Powerup {
 	constructor(x, y, width, height) {
 		super();
 		this.image = healthImage;
@@ -206,7 +224,7 @@ function newHealth() {
 //SOURCE: https://www.stockunlimited.com/similar/2008684.html
 var starImage = new Image();
 starImage.src = "https://image.ibb.co/hSUbDR/pixel_gold_star_2021368.png";
-class Star extends Sprite {
+class Star extends Powerup {
 	constructor(x, y, width, height) {
 		super();
 		this.image = starImage;
@@ -328,7 +346,7 @@ function updateScene() {
 	checkBounds(player);
 	moveToward(mouse, player, player.speed);
 	enemies.forEach(enemy => moveToward(player, enemy, enemy.speed));
-	skeletonCollision();
+	enemies[0].checkEnemyCollision();
 	player.checkHit();
 	scoreboard.updateScore();
 	if (pauseGame) {
@@ -337,21 +355,6 @@ function updateScene() {
 		requestAnimationFrame(drawScene);
 	} else {
 		endGame();
-	}
-}
-
-function checkPowerups() {
-	if (score % 5 === 0) {
-		newHealth();
-		healthOnGround = true;
-	}
-	if (score % 10 === 0) {
-		newStar();
-		starOnGround = true;
-		skeletonDamage += 1;
-	}
-	if (score % 25 === 0) {
-		numSpawn++;
 	}
 }
 
