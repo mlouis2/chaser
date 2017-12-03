@@ -346,7 +346,7 @@ function updateScene() {
 	}
 	checkBounds(player);
 	player.moveToward(mouse, player.speed);
-	enemies.forEach(enemy => moveToward(player, enemy.speed));
+	enemies.forEach(enemy => enemy.moveToward(player, enemy.speed));
 	enemies[0].checkEnemyCollision();
 	player.checkHit();
 	scoreboard.updateScore();
