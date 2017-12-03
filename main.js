@@ -47,8 +47,37 @@ function randomSpeed() {
 }
 
 class Game {
+ 	updateScene() {
+		if (healthOnGround) {
+			health.checkHealth();
+		}
+		if (starOnGround) {
+			star.checkStar();
+		}
+		checkBounds(player);
+		player.moveToward(mouse, player.speed);
+		enemies.forEach(enemy => enemy.moveToward(player, enemy.speed));
+		enemies[0].checkEnemyCollision();
+		player.checkHit();
+		scoreboard.updateScore();
+		if (pauseGame) {
+			loadPauseScreen();
+		} else if (healthBar.value > 0) {
+			requestAnimationFrame(this.drawScene);
+		} else {
+			endGame();
+		}
+	}
 
+	drawScene() {
+		clearBackground();
+		player.draw();
+		enemies.forEach(enemy => enemy.draw());
+		this.updateScene();
+	}
 }
+
+let game = new Game();
 
 class Scoreboard {
 	storeScore() {
@@ -136,7 +165,7 @@ class Sprite {
 
 backgroundSounds.play();
 scoreboard.retrieveScore();
-requestAnimationFrame(drawScene);
+requestAnimationFrame(game.drawScene);
 
 //SOURCE: https://openclipart.org/detail/227980/pixel-character
 var playerImage = new Image();
@@ -164,6 +193,7 @@ class Player extends Sprite {
 	}
 }
 let player = new Player(canvas.width / 2, canvas.height / 2, PLAYER_WIDTH, PLAYER_HEIGHT, PLAYER_SPEED);
+
 //SOURCE: http://keywordsuggest.org/gallery/748456.html
 var skeletonImage = new Image();
 skeletonImage.src = "https://image.ibb.co/chMfaG/trimmedskeleton.png";
@@ -189,6 +219,7 @@ class Enemy extends Sprite {
 		}
 	}
 }
+
 let enemies = [
 	new Enemy(-100, -100, SKELETON_WIDTH, SKELETON_HEIGHT, randomSpeed()),
 	new Enemy(canvas.width + 100, -100, SKELETON_WIDTH, SKELETON_HEIGHT, randomSpeed()),
@@ -216,7 +247,6 @@ class Powerup extends Sprite {
 		}
 	}
 	drawPowerup() {
-		console.log("checking!!");
 		this.x = randomLocation(canvas.width, this.width);
 		this.y = randomLocation(canvas.height, this.width);
 		this.draw();
@@ -331,35 +361,6 @@ function distanceBetween(sprite1, sprite2) {
 	return Math.hypot(sprite1.x - sprite2.x, sprite1.y - sprite2.y);
 }
 
-function updateScene() {
-	if (healthOnGround) {
-		health.checkHealth();
-	}
-	if (starOnGround) {
-		star.checkStar();
-	}
-	checkBounds(player);
-	player.moveToward(mouse, player.speed);
-	enemies.forEach(enemy => enemy.moveToward(player, enemy.speed));
-	enemies[0].checkEnemyCollision();
-	player.checkHit();
-	scoreboard.updateScore();
-	if (pauseGame) {
-		loadPauseScreen();
-	} else if (healthBar.value > 0) {
-		requestAnimationFrame(drawScene);
-	} else {
-		endGame();
-	}
-}
-
-function drawScene() {
-	clearBackground();
-	player.draw();
-	enemies.forEach(enemy => enemy.draw());
-	updateScene();
-}
-
 function pauseSounds() {
 	skeletonSounds.pause();
 	backgroundSounds.pause();
@@ -398,7 +399,7 @@ function mouseClick(event) {
 	} else {
 		if (pauseGame) {
 			backgroundSounds.play();
-			requestAnimationFrame(drawScene);
+			requestAnimationFrame(game.drawScene);
 		}
 		pauseGame = !pauseGame;
 	}
@@ -413,7 +414,7 @@ function resetGame() {
 	scoreboard.resetScore();
 	resetEnemies();
 	gameOver = false;
-	requestAnimationFrame(drawScene);
+	requestAnimationFrame(game.drawScene);
 }
 
 function resetEnemies() {
