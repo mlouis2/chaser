@@ -104,6 +104,18 @@ class Sprite {
 	draw() {
 		ctx.drawImage(this.image, this.x, this.y, this.width, this.height);
 	}
+	//Credit to Ryan Taus for helping me with the math for this function :)
+	moveToward(leader, speed) {
+		let dx = leader.x - this.x;
+		let dy = leader.y - this.y;
+		let hypot = distanceBetween(leader, follower);
+		let speedx = speed * (dx / hypot);
+		let speedy = speed * (dy / hypot);
+		if (hypot > speed) {
+			this.x += speedx;
+			this.y += speedy;
+		}
+	}
 }
 
 backgroundSounds.play();
@@ -269,6 +281,7 @@ function updateMouse(event) {
 	mouse.x = event.clientX - left;
 	mouse.y = event.clientY - top;
 }
+
 document.body.addEventListener("mousemove", updateMouse);
 
 function haveCollided(sprite1, sprite2) {
@@ -294,6 +307,7 @@ function writeInstructions() {
 	ctx.fillText("MOVE mouse to move.", 10, 20);
 	ctx.fillText("CLICK to pause.", 10, 40);
 }
+
 var backgroundImage = new Image();
 backgroundImage.src = "https://image.ibb.co/gF02nm/game_background2.jpg";
 
@@ -304,19 +318,6 @@ function clearBackground() {
 
 function distanceBetween(sprite1, sprite2) {
 	return Math.hypot(sprite1.x - sprite2.x, sprite1.y - sprite2.y);
-}
-
-//Credit to Ryan Taus for helping me with the math for this function :)
-function moveToward(leader, follower, speed) {
-	let dx = leader.x - follower.x;
-	let dy = leader.y - follower.y;
-	let hypot = distanceBetween(leader, follower);
-	let speedx = speed * (dx / hypot);
-	let speedy = speed * (dy / hypot);
-	if (hypot > speed) {
-		follower.x += speedx;
-		follower.y += speedy;
-	}
 }
 
 function jumpBack(spriteJumping, sprite2, amount) {
@@ -344,8 +345,8 @@ function updateScene() {
 		star.checkStar();
 	}
 	checkBounds(player);
-	moveToward(mouse, player, player.speed);
-	enemies.forEach(enemy => moveToward(player, enemy, enemy.speed));
+	player.moveToward(mouse, player.speed);
+	enemies.forEach(enemy => moveToward(player, enemy.speed));
 	enemies[0].checkEnemyCollision();
 	player.checkHit();
 	scoreboard.updateScore();
