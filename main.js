@@ -217,8 +217,8 @@ class Powerup extends Sprite {
 	}
 	drawPowerup() {
 		console.log("checking!!");
-		this.x = randomLocation(canvas.width, this.size);
-		this.y = randomLocation(canvas.height, this.size);
+		this.x = randomLocation(canvas.width, this.width);
+		this.y = randomLocation(canvas.height, this.width);
 		this.draw();
 	}
 }
