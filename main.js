@@ -78,6 +78,24 @@ class Scoreboard {
 		score = 0;
 		scoreText.innerHTML = 0;
 	}
+
+	updateScore() {
+		scoreMiliseconds++;
+		if (scoreMiliseconds % 100 === 0) {
+			score++;
+			if (score % 5 === 0) {
+				if (maxSpeed < player.speed - speedIncrement) {
+					minSpeed += speedIncrement;
+					maxSpeed += speedIncrement;
+				}
+				for (let x = 0; x < numSpawn; x++) {
+					spawnEnemy(canvas.width / 2, canvas.height + 50);
+				}
+			}
+			checkPowerups();
+			scoreText.innerHTML = score;
+		}
+	}
 }
 
 let scoreboard = new Scoreboard();
@@ -303,7 +321,7 @@ function updateScene() {
 	enemies.forEach(enemy => moveToward(player, enemy, enemy.speed));
 	skeletonCollision();
 	checkHit();
-	updateScore();
+	scoreboard.updateScore();
 	if (pauseGame) {
 		loadPauseScreen();
 	} else if (healthBar.value > 0) {
@@ -321,24 +339,6 @@ function checkHit() {
 			skeletonSounds.play();
 		}
 	});
-}
-
-function updateScore() {
-	scoreMiliseconds++;
-	if (scoreMiliseconds % 100 === 0) {
-		score++;
-		if (score % 5 === 0) {
-			if (maxSpeed < player.speed - speedIncrement) {
-				minSpeed += speedIncrement;
-				maxSpeed += speedIncrement;
-			}
-			for (let x = 0; x < numSpawn; x++) {
-				spawnEnemy(canvas.width / 2, canvas.height + 50);
-			}
-		}
-		checkPowerups();
-		scoreText.innerHTML = score;
-	}
 }
 
 function checkPowerups() {
@@ -436,7 +436,7 @@ let enteredKeys = [];
 let currentPos = 0;
 
 document.addEventListener('keydown', function(e) {
-	let key = e.keyCode();
+	let key = e.keyCode;
 	if (key === konamiCode[currentPos]) {
 		currentPos++;
 		enteredKeys.push(key);
