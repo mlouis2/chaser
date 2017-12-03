@@ -203,17 +203,22 @@ function spawnEnemy(x, y) {
 class Powerup extends Sprite {
 	checkPowerups() {
 		if (score % 5 === 0) {
-			health.newHealth();
+			health.newPowerup();
 			healthOnGround = true;
 		}
 		if (score % 10 === 0) {
-			star.newStar();
+			star.newPowerup();
 			starOnGround = true;
 			skeletonDamage += 1;
 		}
 		if (score % 25 === 0) {
 			numSpawn++;
 		}
+	}
+	newPowerup() {
+		this.x = randomLocation(canvas.width, this.size);
+		this.y = randomLocation(canvas.height, this.size);
+		this.draw();
 	}
 }
 
@@ -239,11 +244,6 @@ class Health extends Powerup {
 			healthBar.value += healthValue;
 			healthOnGround = false;
 		}
-	}
-	newHealth() {
-		health.x = randomLocation(canvas.width, HEALTH_SIZE);
-		health.y = randomLocation(canvas.height, HEALTH_SIZE);
-		health.draw();
 	}
 }
 let health = new Health(randomLocation(canvas.width, HEALTH_SIZE), randomLocation(canvas.height, HEALTH_SIZE), HEALTH_SIZE, HEALTH_SIZE);
@@ -273,11 +273,6 @@ class Star extends Powerup {
 			maxSpeed = maxSpeed - speedIncrement;
 			starOnGround = false;
 		}
-	}
-	newStar() {
-		star.x = randomLocation(canvas.width, HEALTH_SIZE);
-		star.y = randomLocation(canvas.height, HEALTH_SIZE);
-		star.draw();
 	}
 }
 let star = new Star(randomLocation(canvas.width, STAR_SIZE), randomLocation(canvas.height, STAR_SIZE), STAR_SIZE, STAR_SIZE);
