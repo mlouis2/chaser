@@ -63,6 +63,7 @@ class Scoreboard {
 	      highScoreText.innerHTML = 0;
 	    }
 	    highScoreText.innerHTML = localStorage.getItem("highScore");
+	    highScore = localStorage.getItem("highScore");
 	  }
 	}
 }
@@ -420,10 +421,11 @@ function resetEnemies() {
 
 function resetScore() {
 	scoreMiliseconds = 0;
+	scoreboard.retrieveScore();
 	if (score > highScore) {
 		highScore = score;
 		highScoreText.innerHTML = highScore;
-    scoreboard.storeScore();
+    		scoreboard.storeScore();
 	}
 	score = 0;
 	scoreText.innerHTML = 0;
