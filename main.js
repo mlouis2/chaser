@@ -125,6 +125,15 @@ class Player extends Sprite {
 			speed
 		});
 	}
+	checkHit() {
+		enemies.forEach(enemy => {
+			if (haveCollided(enemy, player)) {
+				jumpBack(enemy, player, 10);
+				healthBar.value -= skeletonDamage;
+				skeletonSounds.play();
+			}
+		});
+	}
 }
 let player = new Player(canvas.width / 2, canvas.height / 2, PLAYER_WIDTH, PLAYER_HEIGHT, PLAYER_SPEED);
 //SOURCE: http://keywordsuggest.org/gallery/748456.html
@@ -177,6 +186,14 @@ class Health extends Sprite {
 			height
 		});
 	}
+	checkHealth() {
+		health.draw();
+		if (haveCollided(player, health)) {
+			healthSound.play();
+			healthBar.value += healthValue;
+			healthOnGround = false;
+		}
+	}
 }
 let health = new Health(randomLocation(canvas.width, HEALTH_SIZE), randomLocation(canvas.height, HEALTH_SIZE), HEALTH_SIZE, HEALTH_SIZE);
 
@@ -186,14 +203,6 @@ function newHealth() {
 	health.draw();
 }
 
-function checkHealth() {
-	health.draw();
-	if (haveCollided(player, health)) {
-		healthSound.play();
-		healthBar.value += healthValue;
-		healthOnGround = false;
-	}
-}
 //SOURCE: https://www.stockunlimited.com/similar/2008684.html
 var starImage = new Image();
 starImage.src = "https://image.ibb.co/hSUbDR/pixel_gold_star_2021368.png";
@@ -208,6 +217,18 @@ class Star extends Sprite {
 			height
 		});
 	}
+	checkStar() {
+		star.draw();
+		if (haveCollided(player, star)) {
+			starSound.play();
+			for (let x = 0; x < starPower; x++) {
+				enemies.shift();
+			}
+			minSpeed = minSpeed - speedIncrement;
+			maxSpeed = maxSpeed - speedIncrement;
+			starOnGround = false;
+		}
+	}
 }
 let star = new Star(randomLocation(canvas.width, STAR_SIZE), randomLocation(canvas.height, STAR_SIZE), STAR_SIZE, STAR_SIZE);
 
@@ -217,18 +238,6 @@ function newStar() {
 	star.draw();
 }
 
-function checkStar() {
-	star.draw();
-	if (haveCollided(player, star)) {
-		starSound.play();
-		for (let x = 0; x < starPower; x++) {
-			enemies.shift();
-		}
-		minSpeed = minSpeed - speedIncrement;
-		maxSpeed = maxSpeed - speedIncrement;
-		starOnGround = false;
-	}
-}
 let mouse = {
 	x: 0,
 	y: 0
@@ -311,16 +320,16 @@ function jumpBack(spriteJumping, sprite2, amount) {
 
 function updateScene() {
 	if (healthOnGround) {
-		checkHealth();
+		health.checkHealth();
 	}
 	if (starOnGround) {
-		checkStar();
+		star.checkStar();
 	}
 	checkBounds(player);
 	moveToward(mouse, player, player.speed);
 	enemies.forEach(enemy => moveToward(player, enemy, enemy.speed));
 	skeletonCollision();
-	checkHit();
+	player.checkHit();
 	scoreboard.updateScore();
 	if (pauseGame) {
 		loadPauseScreen();
@@ -329,16 +338,6 @@ function updateScene() {
 	} else {
 		endGame();
 	}
-}
-
-function checkHit() {
-	enemies.forEach(enemy => {
-		if (haveCollided(enemy, player)) {
-			jumpBack(enemy, player, 10);
-			healthBar.value -= skeletonDamage;
-			skeletonSounds.play();
-		}
-	});
 }
 
 function checkPowerups() {
