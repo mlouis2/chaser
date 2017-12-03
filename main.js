@@ -63,7 +63,7 @@ class Game {
 		if (pauseGame) {
 			loadPauseScreen();
 		} else if (healthBar.value > 0) {
-			requestAnimationFrame(this.drawScene());
+			requestAnimationFrame(this.drawScene.bind(this));
 		} else {
 			endGame();
 		}
@@ -165,7 +165,7 @@ class Sprite {
 
 backgroundSounds.play();
 scoreboard.retrieveScore();
-requestAnimationFrame(game.drawScene);
+requestAnimationFrame(game.drawScene.bind(game));
 
 //SOURCE: https://openclipart.org/detail/227980/pixel-character
 var playerImage = new Image();
@@ -399,7 +399,7 @@ function mouseClick(event) {
 	} else {
 		if (pauseGame) {
 			backgroundSounds.play();
-			requestAnimationFrame(game.drawScene);
+			requestAnimationFrame(game.drawScene.bind(game));
 		}
 		pauseGame = !pauseGame;
 	}
@@ -414,7 +414,7 @@ function resetGame() {
 	scoreboard.resetScore();
 	resetEnemies();
 	gameOver = false;
-	requestAnimationFrame(game.drawScene);
+	requestAnimationFrame(game.drawScene.bind(game));
 }
 
 function resetEnemies() {
