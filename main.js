@@ -38,13 +38,8 @@ let backgroundSounds = new Audio('https://raw.githubusercontent.com/mlouis2/chas
 //SOURCE: https://www.youtube.com/watch?v=lpqDphtOskU
 let skeletonSounds = new Audio('https://raw.githubusercontent.com/mlouis2/chaser/master/sounds/skeleton.mp3');
 
-function randomLocation(max, size) {
-	return Math.random() * (max - size);
-}
-
-function randomSpeed() {
-	return Math.random() * (maxSpeed - minSpeed) + minSpeed;
-}
+var backgroundImage = new Image();
+backgroundImage.src = "https://image.ibb.co/gF02nm/game_background2.jpg";
 
 class Game {
  	updateScene() {
@@ -54,30 +49,108 @@ class Game {
 		if (starOnGround) {
 			star.checkStar();
 		}
-		checkBounds(player);
+		player.checkBounds();
 		player.moveToward(mouse, player.speed);
 		enemies.forEach(enemy => enemy.moveToward(player, enemy.speed));
 		enemies[0].checkEnemyCollision();
 		player.checkHit();
 		scoreboard.updateScore();
 		if (pauseGame) {
-			loadPauseScreen();
+			this.loadPauseScreen();
 		} else if (healthBar.value > 0) {
 			requestAnimationFrame(this.drawScene.bind(this));
 		} else {
-			endGame();
+			this.endGame();
 		}
 	}
 
 	drawScene() {
-		clearBackground();
+		this.clearBackground();
 		player.draw();
 		enemies.forEach(enemy => enemy.draw());
 		this.updateScene();
 	}
-}
 
-let game = new Game();
+	endGame() {
+		this.pauseSounds();
+		gameOverSound.currentTime = 1;
+		gameOverSound.play();
+		gameOver = true;
+		ctx.font = "120px VT323";
+		ctx.fillStyle = "white";
+		ctx.textAlign = "center";
+		ctx.fillText("GAME OVER", canvas.width / 2, canvas.height / 2);
+		ctx.font = "50px VT323";
+		ctx.fillText("CLICK to play again", canvas.width / 2, canvas.height / 2 + 50);
+		ctx.textAlign = "left";
+	}
+
+	resetGame() {
+		backgroundSounds.currentTime = 0;
+		backgroundSounds.play();
+		healthBar.value = 100;
+		healthOnGround = false;
+		starOnGround = false;
+		scoreboard.resetScore();
+		this.resetEnemies();
+		gameOver = false;
+		requestAnimationFrame(this.drawScene.bind(this));
+	}
+
+	spawnEnemy(x, y) {
+		enemies.push(new Enemy(x, y, SKELETON_WIDTH, SKELETON_HEIGHT, game.randomSpeed()));
+	}
+
+	resetEnemies() {
+		numSpawn = 1;
+		maxSpeed = START_MAX_SPEED;
+		minSpeed = START_MIN_SPEED;
+		skeletonDamage = 1;
+		enemies = [];
+		this.spawnEnemy(-100, -100);
+		this.spawnEnemy(canvas.width + 100, -100);
+		this.spawnEnemy(-100, canvas.height + 100);
+		this.spawnEnemy(canvas.width + 100, canvas.width + 50);
+	}
+
+	loadPauseScreen() {
+		this.pauseSounds();
+		ctx.font = "120px VT323";
+		ctx.fillStyle = "white";
+		ctx.textAlign = "center";
+		ctx.fillText("PAUSED", canvas.width / 2, canvas.height / 2);
+		ctx.font = "30px VT323";
+		ctx.fillText("HEALTH appears every five seconds.", canvas.width / 2, canvas.height / 2 + 50);
+		ctx.fillText("A STAR appears every ten seconds.", canvas.width / 2, canvas.height / 2 + 80);
+		ctx.fillText("A STAR kills three skeletons.", canvas.width / 2, canvas.height / 2 + 110);
+		ctx.textAlign = "left";
+	}
+
+	clearBackground() {
+		ctx.drawImage(backgroundImage, 0, 0, canvas.width, canvas.height);
+		this.writeInstructions();
+	}
+
+	writeInstructions() {
+		ctx.font = "20px VT323";
+		ctx.fillStyle = "white";
+		ctx.fillText("MOVE mouse to move.", 10, 20);
+		ctx.fillText("CLICK to pause.", 10, 40);
+	}
+
+	randomLocation(max, size) {
+		return Math.random() * (max - size);
+	}
+
+	randomSpeed() {
+		return Math.random() * (maxSpeed - minSpeed) + minSpeed;
+	}
+
+	pauseSounds() {
+		skeletonSounds.pause();
+		backgroundSounds.pause();
+	}
+}
 
 class Scoreboard {
 	storeScore() {
@@ -118,7 +191,7 @@ class Scoreboard {
 					maxSpeed += speedIncrement;
 				}
 				for (let x = 0; x < numSpawn; x++) {
-					spawnEnemy(canvas.width / 2, canvas.height + 50);
+					game.spawnEnemy(canvas.width / 2, canvas.height + 50);
 				}
 			}
 			health.checkPowerups();
@@ -127,7 +200,16 @@ class Scoreboard {
 	}
 }
 
+class soundHandler {
+
+}
+
 let scoreboard = new Scoreboard();
+let game = new Game();
+
+backgroundSounds.play();
+scoreboard.retrieveScore();
+requestAnimationFrame(game.drawScene.bind(game));
 
 class Sprite {
 	draw() {
@@ -137,7 +219,7 @@ class Sprite {
 	moveToward(leader, speed) {
 		let dx = leader.x - this.x;
 		let dy = leader.y - this.y;
-		let hypot = distanceBetween(leader, this);
+		let hypot = this.distanceTo(leader);
 		let speedx = speed * (dx / hypot);
 		let speedy = speed * (dy / hypot);
 		if (hypot > speed) {
@@ -161,11 +243,27 @@ class Sprite {
 			this.y = this.y - amount;
 		}
 	}
-}
+	checkBounds() {
+		if (this.x < 0) {
+			this.x = 0;
+		} else if (this.x + this.width > canvas.width) {
+			this.x = canvas.width - this.width;
+		}
+		if (this.y < 0) {
+			this.y = 0;
+		} else if (this.y + this.height > canvas.height) {
+			this.y = canvas.height - this.height;
+		}
+	}
 
-backgroundSounds.play();
-scoreboard.retrieveScore();
-requestAnimationFrame(game.drawScene.bind(game));
+	hasCollidedWith(sprite2) {
+		return (this.x < sprite2.x + sprite2.width && this.x + this.width > sprite2.x && this.y < sprite2.y + sprite2.height && this.height + this.y > sprite2.y);
+	}
+
+	distanceTo(sprite2) {
+		return Math.hypot(this.x - sprite2.x, this.y - sprite2.y);
+	}
+}
 
 //SOURCE: https://openclipart.org/detail/227980/pixel-character
 var playerImage = new Image();
@@ -184,7 +282,7 @@ class Player extends Sprite {
 	}
 	checkHit() {
 		enemies.forEach(enemy => {
-			if (haveCollided(enemy, player)) {
+			if (enemy.hasCollidedWith(player)) {
 				enemy.jumpBack(player, 10);
 				healthBar.value -= skeletonDamage;
 				skeletonSounds.play();
@@ -212,7 +310,7 @@ class Enemy extends Sprite {
 	checkEnemyCollision() {
 		for (let x = 0; x < enemies.length; x++) {
 			for (let y = enemies.length - 1; y > x; y--) {
-				if (haveCollided(enemies[x], enemies[y])) {
+				if (enemies[x].hasCollidedWith(enemies[y])) {
 					enemies[x].jumpBack(enemies[y], 1);
 				}
 			}
@@ -221,15 +319,11 @@ class Enemy extends Sprite {
 }
 
 let enemies = [
-	new Enemy(-100, -100, SKELETON_WIDTH, SKELETON_HEIGHT, randomSpeed()),
-	new Enemy(canvas.width + 100, -100, SKELETON_WIDTH, SKELETON_HEIGHT, randomSpeed()),
-	new Enemy(-100, canvas.height + 100, SKELETON_WIDTH, SKELETON_HEIGHT, randomSpeed()),
-	new Enemy(canvas.width + 100, canvas.width + 50, SKELETON_WIDTH, SKELETON_HEIGHT, randomSpeed())
+	new Enemy(-100, -100, SKELETON_WIDTH, SKELETON_HEIGHT, game.randomSpeed()),
+	new Enemy(canvas.width + 100, -100, SKELETON_WIDTH, SKELETON_HEIGHT, game.randomSpeed()),
+	new Enemy(-100, canvas.height + 100, SKELETON_WIDTH, SKELETON_HEIGHT, game.randomSpeed()),
+	new Enemy(canvas.width + 100, canvas.width + 50, SKELETON_WIDTH, SKELETON_HEIGHT, game.randomSpeed())
 ];
-
-function spawnEnemy(x, y) {
-	enemies.push(new Enemy(x, y, SKELETON_WIDTH, SKELETON_HEIGHT, randomSpeed()));
-}
 
 class Powerup extends Sprite {
 	checkPowerups() {
@@ -247,8 +341,8 @@ class Powerup extends Sprite {
 		}
 	}
 	drawPowerup() {
-		this.x = randomLocation(canvas.width, this.width);
-		this.y = randomLocation(canvas.height, this.width);
+		this.x = game.randomLocation(canvas.width, this.width);
+		this.y = game.randomLocation(canvas.height, this.width);
 		this.draw();
 	}
 }
@@ -270,7 +364,7 @@ class Health extends Powerup {
 	}
 	checkHealth() {
 		this.draw();
-		if (haveCollided(player, health)) {
+		if (player.hasCollidedWith(health)) {
 			healthSound.play();
 			healthBar.value += healthValue;
 			healthOnGround = false;
@@ -278,7 +372,7 @@ class Health extends Powerup {
 	}
 }
 
-let health = new Health(randomLocation(canvas.width, HEALTH_SIZE), randomLocation(canvas.height, HEALTH_SIZE), HEALTH_SIZE, HEALTH_SIZE);
+let health = new Health(game.randomLocation(canvas.width, HEALTH_SIZE), game.randomLocation(canvas.height, HEALTH_SIZE), HEALTH_SIZE, HEALTH_SIZE);
 
 //SOURCE: https://www.stockunlimited.com/similar/2008684.html
 var starImage = new Image();
@@ -296,7 +390,7 @@ class Star extends Powerup {
 	}
 	checkStar() {
 		this.draw();
-		if (haveCollided(player, star)) {
+		if (player.hasCollidedWith(star)) {
 			starSound.play();
 			for (let x = 0; x < starPower; x++) {
 				enemies.shift();
@@ -307,7 +401,8 @@ class Star extends Powerup {
 		}
 	}
 }
-let star = new Star(randomLocation(canvas.width, STAR_SIZE), randomLocation(canvas.height, STAR_SIZE), STAR_SIZE, STAR_SIZE);
+
+let star = new Star(game.randomLocation(canvas.width, STAR_SIZE), game.randomLocation(canvas.height, STAR_SIZE), STAR_SIZE, STAR_SIZE);
 
 let mouse = {
 	x: 0,
@@ -325,77 +420,9 @@ function updateMouse(event) {
 
 document.body.addEventListener("mousemove", updateMouse);
 
-function haveCollided(sprite1, sprite2) {
-	return (sprite1.x < sprite2.x + sprite2.width && sprite1.x + sprite1.width > sprite2.x && sprite1.y < sprite2.y + sprite2.height && sprite1.height + sprite1.y > sprite2.y);
-}
-
-function checkBounds(sprite) {
-	if (sprite.x < 0) {
-		sprite.x = 0;
-	} else if (sprite.x + sprite.width > canvas.width) {
-		sprite.x = canvas.width - sprite.width;
-	}
-	if (sprite.y < 0) {
-		sprite.y = 0;
-	} else if (sprite.y + sprite.height > canvas.height) {
-		sprite.y = canvas.height - sprite.height;
-	}
-}
-
-function writeInstructions() {
-	ctx.font = "20px VT323";
-	ctx.fillStyle = "white";
-	ctx.fillText("MOVE mouse to move.", 10, 20);
-	ctx.fillText("CLICK to pause.", 10, 40);
-}
-
-var backgroundImage = new Image();
-backgroundImage.src = "https://image.ibb.co/gF02nm/game_background2.jpg";
-
-function clearBackground() {
-	ctx.drawImage(backgroundImage, 0, 0, canvas.width, canvas.height);
-	writeInstructions();
-}
-
-function distanceBetween(sprite1, sprite2) {
-	return Math.hypot(sprite1.x - sprite2.x, sprite1.y - sprite2.y);
-}
-
-function pauseSounds() {
-	skeletonSounds.pause();
-	backgroundSounds.pause();
-}
-
-function loadPauseScreen() {
-	pauseSounds();
-	ctx.font = "120px VT323";
-	ctx.fillStyle = "white";
-	ctx.textAlign = "center";
-	ctx.fillText("PAUSED", canvas.width / 2, canvas.height / 2);
-	ctx.font = "30px VT323";
-	ctx.fillText("HEALTH appears every five seconds.", canvas.width / 2, canvas.height / 2 + 50);
-	ctx.fillText("A STAR appears every ten seconds.", canvas.width / 2, canvas.height / 2 + 80);
-	ctx.fillText("A STAR kills three skeletons.", canvas.width / 2, canvas.height / 2 + 110);
-	ctx.textAlign = "left";
-}
-
-function endGame() {
-	pauseSounds();
-	gameOverSound.currentTime = 1;
-	gameOverSound.play();
-	gameOver = true;
-	ctx.font = "120px VT323";
-	ctx.fillStyle = "white";
-	ctx.textAlign = "center";
-	ctx.fillText("GAME OVER", canvas.width / 2, canvas.height / 2);
-	ctx.font = "50px VT323";
-	ctx.fillText("CLICK to play again", canvas.width / 2, canvas.height / 2 + 50);
-	ctx.textAlign = "left";
-}
-
 function mouseClick(event) {
 	if (gameOver) {
-		resetGame();
+		game.resetGame();
 	} else {
 		if (pauseGame) {
 			backgroundSounds.play();
@@ -403,30 +430,6 @@ function mouseClick(event) {
 		}
 		pauseGame = !pauseGame;
 	}
-}
-
-function resetGame() {
-	backgroundSounds.currentTime = 0;
-	backgroundSounds.play();
-	healthBar.value = 100;
-	healthOnGround = false;
-	starOnGround = false;
-	scoreboard.resetScore();
-	resetEnemies();
-	gameOver = false;
-	requestAnimationFrame(game.drawScene.bind(game));
-}
-
-function resetEnemies() {
-	numSpawn = 1;
-	maxSpeed = START_MAX_SPEED;
-	minSpeed = START_MIN_SPEED;
-	skeletonDamage = 1;
-	enemies = [];
-	spawnEnemy(-100, -100);
-	spawnEnemy(canvas.width + 100, -100);
-	spawnEnemy(-100, canvas.height + 100);
-	spawnEnemy(canvas.width + 100, canvas.width + 50);
 }
 
 let konamiCode = [38, 38, 40, 40, 37, 39, 37, 39, 66, 65];
