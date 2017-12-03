@@ -116,6 +116,22 @@ class Sprite {
 			this.y += speedy;
 		}
 	}
+	jumpBack(sprite2, amount) {
+		let spriteJumpingMidX = this.x + this.width / 2;
+		let spriteJumpingMidY = this.y + this.height / 2;
+		let sprite2MidX = sprite2.x + sprite2.width / 2;
+		let sprite2MidY = sprite2.y + sprite2.height / 2;
+		if (spriteJumpingMidX > sprite2MidX) {
+			this.x = this.x + amount;
+		} else {
+			this.x = this.x - amount;
+		}
+		if (spriteJumpingMidY > sprite2MidY) {
+			this.y = this.y + amount;
+		} else {
+			this.y = this.y - amount;
+		}
+	}
 }
 
 backgroundSounds.play();
@@ -140,7 +156,7 @@ class Player extends Sprite {
 	checkHit() {
 		enemies.forEach(enemy => {
 			if (haveCollided(enemy, player)) {
-				jumpBack(enemy, player, 10);
+				enemy.jumpBack(player, 10);
 				healthBar.value -= skeletonDamage;
 				skeletonSounds.play();
 			}
@@ -167,7 +183,7 @@ class Enemy extends Sprite {
 		for (let x = 0; x < enemies.length; x++) {
 			for (let y = enemies.length - 1; y > x; y--) {
 				if (haveCollided(enemies[x], enemies[y])) {
-					jumpBack(enemies[x], enemies[y], 1);
+					enemies[x].jumpBack(enemies[y], 1);
 				}
 			}
 		}
@@ -187,11 +203,11 @@ function spawnEnemy(x, y) {
 class Powerup extends Sprite {
 	checkPowerups() {
 		if (score % 5 === 0) {
-			newHealth();
+			health.newHealth();
 			healthOnGround = true;
 		}
 		if (score % 10 === 0) {
-			newStar();
+			star.newStar();
 			starOnGround = true;
 			skeletonDamage += 1;
 		}
@@ -224,14 +240,13 @@ class Health extends Powerup {
 			healthOnGround = false;
 		}
 	}
+	newHealth() {
+		health.x = randomLocation(canvas.width, HEALTH_SIZE);
+		health.y = randomLocation(canvas.height, HEALTH_SIZE);
+		health.draw();
+	}
 }
 let health = new Health(randomLocation(canvas.width, HEALTH_SIZE), randomLocation(canvas.height, HEALTH_SIZE), HEALTH_SIZE, HEALTH_SIZE);
-
-function newHealth() {
-	health.x = randomLocation(canvas.width, HEALTH_SIZE);
-	health.y = randomLocation(canvas.height, HEALTH_SIZE);
-	health.draw();
-}
 
 //SOURCE: https://www.stockunlimited.com/similar/2008684.html
 var starImage = new Image();
@@ -259,14 +274,13 @@ class Star extends Powerup {
 			starOnGround = false;
 		}
 	}
+	newStar() {
+		star.x = randomLocation(canvas.width, HEALTH_SIZE);
+		star.y = randomLocation(canvas.height, HEALTH_SIZE);
+		star.draw();
+	}
 }
 let star = new Star(randomLocation(canvas.width, STAR_SIZE), randomLocation(canvas.height, STAR_SIZE), STAR_SIZE, STAR_SIZE);
-
-function newStar() {
-	star.x = randomLocation(canvas.width, HEALTH_SIZE);
-	star.y = randomLocation(canvas.height, HEALTH_SIZE);
-	star.draw();
-}
 
 let mouse = {
 	x: 0,
@@ -318,23 +332,6 @@ function clearBackground() {
 
 function distanceBetween(sprite1, sprite2) {
 	return Math.hypot(sprite1.x - sprite2.x, sprite1.y - sprite2.y);
-}
-
-function jumpBack(spriteJumping, sprite2, amount) {
-	let spriteJumpingMidX = spriteJumping.x + spriteJumping.width / 2;
-	let spriteJumpingMidY = spriteJumping.y + spriteJumping.height / 2;
-	let sprite2MidX = sprite2.x + sprite2.width / 2;
-	let sprite2MidY = sprite2.y + sprite2.height / 2;
-	if (spriteJumpingMidX > sprite2MidX) {
-		spriteJumping.x = spriteJumping.x + amount;
-	} else {
-		spriteJumping.x = spriteJumping.x - amount;
-	}
-	if (spriteJumpingMidY > sprite2MidY) {
-		spriteJumping.y = spriteJumping.y + amount;
-	} else {
-		spriteJumping.y = spriteJumping.y - amount;
-	}
 }
 
 function updateScene() {
