@@ -203,11 +203,11 @@ function spawnEnemy(x, y) {
 class Powerup extends Sprite {
 	checkPowerups() {
 		if (score % 5 === 0) {
-			health.newPowerup();
+			health.drawPowerup();
 			healthOnGround = true;
 		}
 		if (score % 10 === 0) {
-			star.newPowerup();
+			star.drawPowerup();
 			starOnGround = true;
 			skeletonDamage += 1;
 		}
@@ -215,7 +215,8 @@ class Powerup extends Sprite {
 			numSpawn++;
 		}
 	}
-	newPowerup() {
+	drawPowerup() {
+		console.log("checking!!");
 		this.x = randomLocation(canvas.width, this.size);
 		this.y = randomLocation(canvas.height, this.size);
 		this.draw();
