@@ -63,7 +63,7 @@ class Game {
 		if (pauseGame) {
 			loadPauseScreen();
 		} else if (healthBar.value > 0) {
-			requestAnimationFrame(this.drawScene);
+			requestAnimationFrame(drawScene());
 		} else {
 			endGame();
 		}
@@ -73,7 +73,7 @@ class Game {
 		clearBackground();
 		player.draw();
 		enemies.forEach(enemy => enemy.draw());
-		this.updateScene();
+		updateScene();
 	}
 }
 
