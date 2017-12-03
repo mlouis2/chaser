@@ -45,6 +45,30 @@ function randomLocation(max, size) {
 function randomSpeed() {
 	return Math.random() * (maxSpeed - minSpeed) + minSpeed;
 }
+
+class Game {
+
+}
+
+class Scoreboard {
+	storeScore() {
+	  if (typeof(Storage) !== "undefined") {
+	    localStorage.setItem("highScore", highScore);
+	  }
+	}
+
+	retrieveScore() {
+	  if (typeof(Storage) !== "undefined") {
+	    if (localStorage.getItem("highScore") === undefined || localStorage.getItem("highScore") === null) {
+	      highScoreText.innerHTML = 0;
+	    }
+	    highScoreText.innerHTML = localStorage.getItem("highScore");
+	  }
+	}
+}
+
+let scoreboard = new Scoreboard();
+
 class Sprite {
 	draw() {
 		ctx.drawImage(this.image, this.x, this.y, this.width, this.height);
@@ -52,7 +76,7 @@ class Sprite {
 }
 
 backgroundSounds.play();
-retrieveScore();
+scoreboard.retrieveScore();
 requestAnimationFrame(drawScene);
 
 //SOURCE: https://openclipart.org/detail/227980/pixel-character
@@ -224,6 +248,7 @@ function distanceBetween(sprite1, sprite2) {
 	return Math.hypot(sprite1.x - sprite2.x, sprite1.y - sprite2.y);
 }
 
+//Credit to Ryan Taus for helping me with the math for this function :)
 function moveToward(leader, follower, speed) {
 	let dx = leader.x - follower.x;
 	let dy = leader.y - follower.y;
@@ -398,52 +423,29 @@ function resetScore() {
 	if (score > highScore) {
 		highScore = score;
 		highScoreText.innerHTML = highScore;
-    storeScore();
+    scoreboard.storeScore();
 	}
 	score = 0;
 	scoreText.innerHTML = 0;
 }
 
-function storeScore() {
-  if (typeof(Storage) !== "undefined") {
-    localStorage.setItem("highScore", highScore);
-  }
-}
-
-function retrieveScore() {
-  if (typeof(Storage) !== "undefined") {
-    if (localStorage.getItem("highScore") === undefined || localStorage.getItem("highScore") === null) {
-      highScoreText.innerHTML = 0;
-    }
-    highScoreText.innerHTML = localStorage.getItem("highScore");
-  }
-}
-
-//Help with Konami Code from https://stackoverflow.com/questions/31626852/how-to-add-konami-code-in-a-website-based-on-html
-var allowedKeys = {
-  37: 'left',
-  38: 'up',
-  39: 'right',
-  40: 'down',
-  65: 'a',
-  66: 'b'
-};
-
-var konamiCode = ['up', 'up', 'down', 'down', 'left', 'right', 'left', 'right', 'b', 'a'];
-var konamiCodePosition = 0;
+let konamiCode = [38, 38, 40, 40, 37, 39, 37, 39, 66, 65];
+let enteredKeys = [];
+let currentPos = 0;
 
 document.addEventListener('keydown', function(e) {
-  var key = allowedKeys[e.keyCode];
-  var requiredKey = konamiCode[konamiCodePosition];
-  if (key == requiredKey) {
-    	konamiCodePosition++;
-    	if (konamiCodePosition == konamiCode.length) {
-      	activateKonamiCode();
-      	konamiCodePosition = 0;
-    	}
-  } else {
-     konamiCodePosition = 0;
-  }
+	let key = e.getKeyCode();
+	if (key === konamiCode[currentPos]) {
+		currentPos++;
+		enteredKeys.push(key);
+	}
+	else {
+		currentPos = 0;
+		enteredKeys = [];
+	}
+	if (enteredKeys.length === konamiCode.length) {
+		activateKonamiCode();
+	}
 });
 
 function activateKonamiCode() {
