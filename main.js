@@ -73,7 +73,7 @@ class Game {
 		clearBackground();
 		player.draw();
 		enemies.forEach(enemy => enemy.draw());
-		//this.updateScene();
+		this.updateScene();
 	}
 }
 
