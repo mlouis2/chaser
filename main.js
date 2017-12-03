@@ -238,7 +238,7 @@ class Health extends Powerup {
 		});
 	}
 	checkHealth() {
-		health.draw();
+		this.draw();
 		if (haveCollided(player, health)) {
 			healthSound.play();
 			healthBar.value += healthValue;
@@ -246,6 +246,7 @@ class Health extends Powerup {
 		}
 	}
 }
+
 let health = new Health(randomLocation(canvas.width, HEALTH_SIZE), randomLocation(canvas.height, HEALTH_SIZE), HEALTH_SIZE, HEALTH_SIZE);
 
 //SOURCE: https://www.stockunlimited.com/similar/2008684.html
@@ -263,7 +264,7 @@ class Star extends Powerup {
 		});
 	}
 	checkStar() {
-		star.draw();
+		this.draw();
 		if (haveCollided(player, star)) {
 			starSound.play();
 			for (let x = 0; x < starPower; x++) {
