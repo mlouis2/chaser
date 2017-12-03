@@ -66,6 +66,18 @@ class Scoreboard {
 	    highScore = localStorage.getItem("highScore");
 	  }
 	}
+
+	resetScore() {
+		scoreMiliseconds = 0;
+		scoreboard.retrieveScore();
+		if (score > highScore) {
+			highScore = score;
+			highScoreText.innerHTML = highScore;
+	    		scoreboard.storeScore();
+		}
+		score = 0;
+		scoreText.innerHTML = 0;
+	}
 }
 
 let scoreboard = new Scoreboard();
@@ -401,7 +413,7 @@ function resetGame() {
 	healthBar.value = 100;
 	healthOnGround = false;
 	starOnGround = false;
-	resetScore();
+	scoreboard.resetScore();
 	resetEnemies();
 	gameOver = false;
 	requestAnimationFrame(drawScene);
@@ -419,24 +431,12 @@ function resetEnemies() {
 	spawnEnemy(canvas.width + 100, canvas.width + 50);
 }
 
-function resetScore() {
-	scoreMiliseconds = 0;
-	scoreboard.retrieveScore();
-	if (score > highScore) {
-		highScore = score;
-		highScoreText.innerHTML = highScore;
-    		scoreboard.storeScore();
-	}
-	score = 0;
-	scoreText.innerHTML = 0;
-}
-
 let konamiCode = [38, 38, 40, 40, 37, 39, 37, 39, 66, 65];
 let enteredKeys = [];
 let currentPos = 0;
 
 document.addEventListener('keydown', function(e) {
-	let key = e.getKeyCode();
+	let key = e.keyCode();
 	if (key === konamiCode[currentPos]) {
 		currentPos++;
 		enteredKeys.push(key);
