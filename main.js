@@ -108,7 +108,7 @@ class Sprite {
 	moveToward(leader, speed) {
 		let dx = leader.x - this.x;
 		let dy = leader.y - this.y;
-		let hypot = distanceBetween(leader, follower);
+		let hypot = distanceBetween(leader, this);
 		let speedx = speed * (dx / hypot);
 		let speedy = speed * (dy / hypot);
 		if (hypot > speed) {
