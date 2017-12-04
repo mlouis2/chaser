@@ -495,7 +495,13 @@ let health = new Health(
 );
 
 let enemies = [
-  new Enemy(-100, -100, SKELETON_WIDTH, SKELETON_HEIGHT, game.randomSpeed()),
+  new Enemy(
+     -100,
+     -100,
+     SKELETON_WIDTH,
+     SKELETON_HEIGHT,
+     game.randomSpeed()
+),
   new Enemy(
     canvas.width + 100,
     -100,
