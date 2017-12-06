@@ -1,5 +1,7 @@
 const canvas = document.querySelector("canvas");
 const ctx = canvas.getContext("2d");
+const healthBar = document.querySelector("progress");
+
 const SKELETON_WIDTH = 50;
 const SKELETON_HEIGHT = 70;
 const START_MAX_SPEED = 3;
@@ -7,34 +9,12 @@ const START_MIN_SPEED = 1.5;
 const PLAYER_WIDTH = 50;
 const PLAYER_HEIGHT = 70;
 const PLAYER_SPEED = 5;
-const healthBar = document.querySelector("progress");
 const POWERUP_SIZE = 50;
+const ENEMY_SPAWN_INTERVAL = 5;
 
-//SOURCE: https://www.youtube.com/watch?v=vJaAy3jmEx8
-let gameOverSound = new Audio("https://raw.githubusercontent.com/mlouis2/chaser/master/sounds/GameOver.mp3");
-//SOURCE: https://freesound.org/people/timgormly/sounds/170155/
-let starSound = new Audio("https://raw.githubusercontent.com/mlouis2/chaser/master/sounds/Star.mp3");
-//SOURCE: https://www.youtube.com/watch?v=J-21BggTCbA
-let healthSound = new Audio("https://raw.githubusercontent.com/mlouis2/chaser/master/sounds/Powerup.mp3");
-//SOURCE: https://www.youtube.com/watch?v=MzZJQtUekwI
-let backgroundSounds = new Audio("https://raw.githubusercontent.com/mlouis2/chaser/master/sounds/Background.mp3");
-//SOURCE: https://www.youtube.com/watch?v=lpqDphtOskU
-let skeletonSounds = new Audio("https://raw.githubusercontent.com/mlouis2/chaser/master/sounds/skeleton.mp3");
-
-var backgroundImage = new Image();
-backgroundImage.src = "https://image.ibb.co/gF02nm/game_background2.jpg";
-//SOURCE: https://openclipart.org/detail/227980/pixel-character
-var playerImage = new Image();
-playerImage.src = "https://image.ibb.co/fPcP2w/8_Bit_Character_1_copy.png";
-//SOURCE: http://keywordsuggest.org/gallery/748456.html
-var skeletonImage = new Image();
-skeletonImage.src = "https://image.ibb.co/chMfaG/trimmedskeleton.png";
-//SOURCE: https://pixabay.com/en/pixel-heart-heart-pixel-symbol-red-2779422/
-var healthImage = new Image();
-healthImage.src = "https://image.ibb.co/eO8KYR/pixel_heart_2779422_960_720.png";
-//SOURCE: https://www.stockunlimited.com/similar/2008684.html
-var starImage = new Image();
-starImage.src = "https://image.ibb.co/hSUbDR/pixel_gold_star_2021368.png";
+// const sounds = {
+//      gameOver: new Audio("https://raw.githubusercontent.com/mlouis2/chaser/master/sounds/GameOver.mp3");
+// };
 
 class Game {
   constructor() {
@@ -56,7 +36,7 @@ class Game {
     player.checkBounds();
     player.moveToward(mouse, player.speed);
     enemies.forEach(enemy => enemy.moveToward(player, enemy.speed));
-    enemies[0].checkEnemyCollision();
+    Enemy.checkEnemyCollisions();
     player.checkHit();
     scoreboard.updateScore();
     if (this.pauseGame) {
@@ -105,22 +85,16 @@ class Game {
     requestAnimationFrame(this.drawScene.bind(this));
   }
 
-  spawnEnemy(x, y) {
-    enemies.push(
-      new Enemy(x, y, SKELETON_WIDTH, SKELETON_HEIGHT, game.randomSpeed())
-    );
-  }
-
   resetEnemies() {
     this.numSpawn = 1;
     this.maxSpeed = START_MAX_SPEED;
     this.minSpeed = START_MIN_SPEED;
     this.skeletonDamage = 1;
     enemies = [];
-    this.spawnEnemy(-100, -100);
-    this.spawnEnemy(canvas.width + 100, -100);
-    this.spawnEnemy(-100, canvas.height + 100);
-    this.spawnEnemy(canvas.width + 100, canvas.width + 50);
+    enemies.push(new Enemy(-100, -100));
+    enemies.push(new Enemy(canvas.width + 100, -100));
+    enemies.push(new Enemy(-100, canvas.height + 100));
+    enemies.push(new Enemy(canvas.width + 100, canvas.width + 50));
   }
 
   loadPauseScreen() {
@@ -232,13 +206,13 @@ class Scoreboard {
     this.scoreMiliseconds++;
     if (this.scoreMiliseconds % 100 === 0) {
       this.score++;
-      if (this.score % 5 === 0) {
+      if (this.score % ENEMY_SPAWN_INTERVAL === 0) {
         if (game.maxSpeed < player.speed - game.speedIncrement) {
           game.minSpeed += game.speedIncrement;
           game.maxSpeed += game.speedIncrement;
         }
         for (let x = 0; x < game.numSpawn; x++) {
-          game.spawnEnemy(canvas.width / 2, canvas.height + 50);
+          enemies.push(new Enemy(canvas.width / 2, canvas.height + 50));
         }
       }
       health.checkPowerups();
@@ -330,18 +304,18 @@ class Player extends Sprite {
 }
 
 class Enemy extends Sprite {
-  constructor(x, y, width, height, speed) {
+  constructor(x, y) {
     super();
+    this.width = SKELETON_WIDTH;
+    this.height = SKELETON_HEIGHT;
+    this.speed = game.randomSpeed();
     this.image = skeletonImage;
     Object.assign(this, {
       x,
-      y,
-      width,
-      height,
-      speed
+      y
     });
   }
-  checkEnemyCollision() {
+  static checkEnemyCollisions() {
     for (let x = 0; x < enemies.length; x++) {
       for (let y = enemies.length - 1; y > x; y--) {
         if (enemies[x].hasCollidedWith(enemies[y])) {
@@ -485,34 +459,10 @@ let health = new Health(
 );
 
 let enemies = [
-  new Enemy(
-     -100,
-     -100,
-     SKELETON_WIDTH,
-     SKELETON_HEIGHT,
-     game.randomSpeed()
-),
-  new Enemy(
-    canvas.width + 100,
-    -100,
-    SKELETON_WIDTH,
-    SKELETON_HEIGHT,
-    game.randomSpeed()
-  ),
-  new Enemy(
-    -100,
-    canvas.height + 100,
-    SKELETON_WIDTH,
-    SKELETON_HEIGHT,
-    game.randomSpeed()
-  ),
-  new Enemy(
-    canvas.width + 100,
-    canvas.width + 100,
-    SKELETON_WIDTH,
-    SKELETON_HEIGHT,
-    game.randomSpeed()
-  )
+new Enemy(-100, -100),
+new Enemy(canvas.width + 100, -100),
+new Enemy(-100, canvas.height + 100),
+new Enemy(canvas.width + 100, canvas.width + 50)
 ];
 
 let mouse = {
