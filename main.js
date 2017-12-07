@@ -471,7 +471,6 @@ QUnit.test("All my functions work", t => {
      t.ok(game.randomLocation(500, 10) > 0);
      t.ok(game.randomSpeed() > game.minSpeed);
      t.ok(game.randomSpeed() < game.maxSpeed);
-     t.ok()
 });
 
 backgroundMusic.play();
