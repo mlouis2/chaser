@@ -11,6 +11,7 @@ const PLAYER_HEIGHT = 70;
 const PLAYER_SPEED = 5;
 const POWERUP_SIZE = 50;
 const ENEMY_SPAWN_INTERVAL = 5;
+const ENEMY_SCREEN_OFFSET = 100;
 
 class Game {
     constructor() {
@@ -87,10 +88,10 @@ class Game {
         this.minSpeed = START_MIN_SPEED;
         this.skeletonDamage = 1;
         enemies = [];
-        enemies.push(new Enemy(-100, -100));
-        enemies.push(new Enemy(canvas.width + 100, -100));
-        enemies.push(new Enemy(-100, canvas.height + 100));
-        enemies.push(new Enemy(canvas.width + 100, canvas.width + 50));
+        enemies.push(new Enemy(-ENEMY_SCREEN_OFFSET, -ENEMY_SCREEN_OFFSET));
+        enemies.push(new Enemy(canvas.width + ENEMY_SCREEN_OFFSET, -ENEMY_SCREEN_OFFSET));
+        enemies.push(new Enemy(-ENEMY_SCREEN_OFFSET, canvas.height + ENEMY_SCREEN_OFFSET));
+        enemies.push(new Enemy(canvas.width + ENEMY_SCREEN_OFFSET, canvas.height + ENEMY_SCREEN_OFFSET));
     }
 
     loadPauseScreen() {
@@ -433,7 +434,9 @@ document.addEventListener("keydown", function(e) {
 document.body.addEventListener("mousemove", updateMouse);
 
 let game = new Game();
+
 let scoreboard = new Scoreboard();
+
 let player = new Player(
     canvas.width / 2,
     canvas.height / 2,
@@ -441,12 +444,14 @@ let player = new Player(
     PLAYER_HEIGHT,
     PLAYER_SPEED
 );
+
 let star = new Star(
     game.randomLocation(canvas.width, POWERUP_SIZE),
     game.randomLocation(canvas.height, POWERUP_SIZE),
     POWERUP_SIZE,
     POWERUP_SIZE
 );
+
 let health = new Health(
     game.randomLocation(canvas.width, POWERUP_SIZE),
     game.randomLocation(canvas.height, POWERUP_SIZE),
@@ -455,10 +460,10 @@ let health = new Health(
 );
 
 let enemies = [
-    new Enemy(-100, -100),
-    new Enemy(canvas.width + 100, -100),
-    new Enemy(-100, canvas.height + 100),
-    new Enemy(canvas.width + 100, canvas.width + 50)
+    new Enemy(-ENEMY_SCREEN_OFFSET, -ENEMY_SCREEN_OFFSET),
+    new Enemy(canvas.width + ENEMY_SCREEN_OFFSET, -ENEMY_SCREEN_OFFSET),
+    new Enemy(-ENEMY_SCREEN_OFFSET, canvas.height + ENEMY_SCREEN_OFFSET),
+    new Enemy(canvas.width + ENEMY_SCREEN_OFFSET, canvas.height + ENEMY_SCREEN_OFFSET)
 ];
 
 let mouse = {
